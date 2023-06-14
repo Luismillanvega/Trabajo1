@@ -6,3 +6,114 @@
 
 # Compiled Pre-Linked Libraries
 *.plx
+create table tb_a (
+
+id number (12),
+
+nombre_p varchar (50), 
+
+tipo varchar (35),
+
+costo number (10));
+
+create table tb_b (descripcion varchar (100));
+
+select*from tb_a;
+
+select*from tb_b;
+
+insert into tb_a values (001, 'donitas', 'pan', 20);
+
+insert into tb_a values (002, 'rebanada', 'pan', 10);
+
+insert into tb_a values (003, 'mantecadas', 'pan', 25);
+
+insert into tb_a values (004, 'nito', 'pan', 15);
+
+insert into tb_a values (005, 'buñuelos', 'pan', 20);
+
+insert into tb_a values (021, 'doritos', 'botana', 15);
+
+insert into tb_a values (022, 'paketaxo', 'botana', 56);
+
+insert into tb_a values (023, 'Sabritas adobadas', 'botana', 35);
+
+insert into tb_a values (024, 'crujitos', 'botana', 15);
+
+insert into tb_a values (025, 'sabritones', 'botana', 50);
+
+insert into tb_a values (051, 'pulparindo', 'dulce', 8);
+
+insert into tb_a values (052, 'picafresa', 'dulce', 2);
+
+insert into tb_a values (053, 'mazapan', 'dulce', 8);
+
+insert into tb_a values (054, 'panditas', 'dulce', 18);
+
+insert into tb_a values (055, 'dragoncito', 'dulce', 3);
+
+CREATE OR REPLACE TRIGGER tri_isertar_actualizar_eliminar
+
+BEFORE DELETE OR UPDATE OR INSERT ON tb_a
+
+FOR EACH ROW
+
+BEGIN
+
+  IF inserting THEN
+
+    INSERT INTO tb_b (des) VALUES (:NEW.nombre_p);
+
+INSERT INTO tb_a (id, nombre_p, tipo, costo) VALUES (:NEW.id, 'Agregar ', :NEW.tipo, :NEW.costo);
+
+  END IF;
+
+    IF updating THEN
+
+    UPDATE tb_b SET des = :NEW.nombre_p WHERE des = :OLD.nombre_p;
+
+    INSERT INTO tb_b (des) VALUES ('actualizado: ' || :NEW.nombre_p);
+
+  END IF;
+
+  IF deleting THEN
+
+    DELETE FROM tb_b WHERE des = :OLD.nombre_p;
+
+    INSERT INTO tb_b (des) VALUES ('eliminado ' || :OLD.nombre_p);
+
+  END IF;
+
+END;
+
+DELETE FROM tb_a WHERE tipo = 'dulce';
+
+DELETE FROM tb_a WHERE id = 055;
+
+INSERT INTO tb_a SELECT 9, 'hershey', tipo, costo FROM tb_a WHERE id = 054;
+
+UPDATE tb_a SET nombre_p = 'tamborcitos y picafresas' WHERE id = 052;
+
+CREATE OR REPLACE TRIGGER tri_inicial
+
+before INSERT ON tb_a
+
+FOR EACH ROW
+
+DECLARE
+
+  inicial CHAR(1);
+
+BEGIN
+
+  inicial := SUBSTR(:NEW.nombre_p, 1, 1);
+
+  IF inicial = 'd' THEN
+
+    INSERT INTO tb_b (des)
+
+    VALUES ('producto agregado y empieza con d  ' || TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MM:SS'));
+
+  END IF;
+
+END;
